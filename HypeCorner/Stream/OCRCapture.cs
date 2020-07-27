@@ -241,6 +241,7 @@ namespace HypeCorner.Stream
 
             //Start the video capture
             Logger.Info("Capture has started", LOG_OCR);
+            Environment.SetEnvironmentVariable("OPENCV_FFMPEG_CAPTURE_OPTIONS", "protocol_whitelist;file,rtp,udp");
             using (VideoCapture capture = new VideoCapture(SdpLocation, VideoCapture.API.Ffmpeg))
             {
                 //var frame = new Mat();
@@ -603,7 +604,7 @@ namespace HypeCorner.Stream
             _restream =  Process.Start(new ProcessStartInfo()
             {
                 FileName = "ffmpeg",
-                Arguments = $"-loglevel panic -protocol_whitelist file,udp,rtp,http,https,tls,tcp,udp {rearg} -i {url}  -vcodec copy -x264-params log-level=panic -an -f rtp rtp://127.0.0.1:1234 -an -bufsize {Buffer}k", //-acodec copy -f rtp rtp://127.0.0.1::1235",
+                Arguments = $"-protocol_whitelist file,udp,rtp,http,https,tls,tcp,udp {rearg} -i {url} -vcodec copy -x264-params log-level=panic -an -f rtp rtp://127.0.0.1:1234 -an -bufsize {Buffer}k", //-acodec copy -f rtp rtp://127.0.0.1::1235",
                 RedirectStandardOutput = !verbose,
                 RedirectStandardError = !verbose,
                 UseShellExecute = verbose,
