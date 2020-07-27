@@ -1,0 +1,106 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Emgu.CV" Version="4.2.0.3636" />
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.2.0.3636" />
+    <PackageReference Include="Json.Net" Version="1.0.23" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="TwitchLib.Api" Version="3.1.4-CI-20200626-19" />
+    <PackageReference Include="TwitchLib.Client" Version="3.1.5" />
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="obs-websocket-dotnet">
+      <HintPath>References\obs-websocket-dotnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="References\obs-websocket-dotnet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\feature_9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\stream.sdp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x64\vcruntime140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x64\opencv_videoio_ffmpeg420_64.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x64\msvcp140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x64\cvextern.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x64\concrt140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x86\vcruntime140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x86\opencv_videoio_ffmpeg420.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x86\msvcp140.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x86\cvextern.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\lachl\.nuget\packages\emgu.cv.runtime.windows\4.2.0.3636\build\x86\concrt140.dll" />
+  </ItemGroup>
+
+</Project>
