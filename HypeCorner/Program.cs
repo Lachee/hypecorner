@@ -37,8 +37,8 @@ namespace HypeCorner
 
 
             //Create and run the HypeZone
-            Console.WriteLine("Starting HypeZone");
-            var hypezone = new HypeZone(config)
+            Console.WriteLine("Starting HypeCorner");
+            var hypezone = new HypeWatcher(config)
             {
                 Logger = new ConsoleLogger(config.LogLevel, true)
             };

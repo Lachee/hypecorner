@@ -19,7 +19,7 @@ namespace HypeCorner
     /// <summary>
     /// This is the main hyperzone. This determines what to watch and links all the systems together
     /// </summary>
-    public class HypeZone
+    public class HypeCornerBot
     {
         #region constants & statics
         private static System.Net.Http.HttpClient http = new System.Net.Http.HttpClient();
@@ -51,7 +51,7 @@ namespace HypeCorner
         //List of streams we can pick from
         List<TwitchLib.Api.V5.Models.Streams.Stream> _availableStreams;
 
-        public HypeZone(Configuration configuration)
+        public HypeCornerBot(Configuration configuration)
         {
             Configuration = configuration;
 
