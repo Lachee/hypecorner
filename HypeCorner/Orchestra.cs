@@ -1,13 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using HypeCorner.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Runtime.CompilerServices;
 
 namespace HypeCorner
 {
@@ -184,9 +182,20 @@ namespace HypeCorner
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public async Task UpdateScoresAsync(int left, int right)
+        public Task UpdateScoresAsync(int left, int right)
         {
-            var json = JsonConvert.SerializeObject(new int[] { left, right });
+            return UpdateScoresAsync(new int[] { left, right });
+        }
+
+        /// <summary>
+        /// Updates the displayed scores.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public async Task UpdateScoresAsync(int[] score)
+        {
+            var json = JsonConvert.SerializeObject(score);
             var contents = new StringContent(json);
             await http.PostAsync("orchestra/score", contents);
         }

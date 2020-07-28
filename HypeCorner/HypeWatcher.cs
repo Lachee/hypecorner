@@ -181,13 +181,28 @@ namespace HypeCorner
 
             //Main loop that we will continue while we are hosting this channel
             //Reset the timer. We are offically reading the contents of the stream now.
-            timer.Restart();
             Logger.Info("Watching stream for end of game", LOG_APP);
+            timer.Restart();
+
+            int previousLeft = -1;
+            int previousRight = -1;
+
             while (_capture.IsRunning && !_skip)
             {
                 //We were able to validate we are still on the scoreboard and still match point, so lets continue
                 if (_capture.IsScoreboardVisible() && _capture.IsMatchPoint())
+                {
+                    //Reset the timer as we are on the scoreboard.
                     timer.Restart();
+
+                    //If the score changed, then we will tell the orchestra.
+                    var scores = _capture.GetScores();
+                    if (scores[0] != previousLeft || scores[1] != previousRight)
+                    {
+                        previousLeft = scores[0]; previousRight = scores[1];
+                        await Orchestra.UpdateScoresAsync(scores);
+                    }
+                }
                 
                 if (Console.KeyAvailable) {
                     while (Console.KeyAvailable) Console.ReadKey(true);
