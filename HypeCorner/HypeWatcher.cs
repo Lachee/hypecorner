@@ -258,7 +258,7 @@ namespace HypeCorner
 
                 //If we are above the max, then just wait for a long time before trying again
                 if (pageOffset >= MAX_PAGE) {
-                    Logger.Error("Failed to find enough in {0} pages. Waiting a minute...", LOG_APP);
+                    Logger.Error("Failed to find enough in {0} pages. Waiting a minute...", LOG_APP, pageOffset);
                     await Task.Delay(TimeSpan.FromMinutes(1));
                     pageOffset = 0;
                 }
