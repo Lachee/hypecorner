@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HypezoneTwitch.Logging
+namespace HypeCorner.Logging
 {
 	/// <summary>
 	/// Logs the outputs to a file

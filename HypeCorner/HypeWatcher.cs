@@ -1,7 +1,7 @@
 ﻿using HypeCorner.Hosting;
 using HypeCorner.Logging;
 using HypeCorner.Stream;
-using HypezoneTwitch.Logging;
+using HypeCorner.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace HypeCorner
     /// <summary>
     /// This is the main hyperzone. This determines what to watch and links all the systems together
     /// </summary>
-    public class HypeWatcher
+    public class HypeWatcher : IDisposable
     {
         #region constants & statics
         private static System.Net.Http.HttpClient http = new System.Net.Http.HttpClient();
@@ -39,10 +39,12 @@ namespace HypeCorner
         public ILogger Logger { get; set; } = new NullLogger();
 
         public Configuration Configuration { get; }
+        public Orchestra Orchestra { get; }
 
         private TwitchAPI _twitch;
         private IHostProvider _host;
         private OCRCapture _capture;
+        private volatile bool _skip = false;
 
         //Handles how long ago a channel was last hosted
         private Dictionary<string, DateTime> _channelHistory;
@@ -51,23 +53,31 @@ namespace HypeCorner
         //List of streams we can pick from
         List<TwitchLib.Api.V5.Models.Streams.Stream> _availableStreams;
 
-        public HypeWatcher(Configuration configuration)
+        public HypeWatcher(Configuration configuration, ILogger logger)
         {
+            //Setup the configuration
+            //Set the configuration
             Configuration = configuration;
+            Logger = logger;
+            Logger.Level = Configuration.LogLevel;
 
+            //Setup Orchestra
+            Orchestra = new Orchestra(configuration.ApiName, configuration.ApiPassword, configuration.ApiBaseUrl) { Logger = Logger };
+            Orchestra.OnSkip += (s, e) => _skip = true;
+
+            //Setup the TWitch API
             _twitch = new TwitchAPI();
             _twitch.Settings.ClientId = configuration.TwitchClientId;
 
-            _host = new EmbedHost(configuration.ApiName, configuration.ApiPassword, configuration.ApiEndpoint);
-
+            //Setup the Host
             //https://twitchapps.com/tmi/
             //var chatCredentials = new ConnectionCredentials("<username>", "<oauth token>");
             //using var host = new TwitchHost(chatCredentials, "<username>");
+            _host = new OrchestratedHost(Orchestra);
 
+            //Setup teh channel limits
             _channelHistory = new Dictionary<string, DateTime>();
             _repeatChannelTimer = TimeSpan.FromMinutes(configuration.RepeatChannelTimer);
-
-            Logger.Level = Configuration.LogLevel;
         }
     
         /// <summary>
@@ -137,6 +147,9 @@ namespace HypeCorner
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            //Reset the skip
+            _skip = false;
+
             //Wait for it to be reading (or until 10s has past)
             Logger.Trace("Waiting for FFMPEG", LOG_APP);
             while (_capture.IsRunning && _capture.FrameCount < 10) {
@@ -170,7 +183,7 @@ namespace HypeCorner
             //Reset the timer. We are offically reading the contents of the stream now.
             timer.Restart();
             Logger.Info("Watching stream for end of game", LOG_APP);
-            while (_capture.IsRunning)
+            while (_capture.IsRunning && !_skip)
             {
                 //We were able to validate we are still on the scoreboard and still match point, so lets continue
                 if (_capture.IsScoreboardVisible() && _capture.IsMatchPoint())
@@ -182,7 +195,7 @@ namespace HypeCorner
                 }
 
                 //If execeded, lets find someone else
-                if (timer.ElapsedMilliseconds >= 20000)
+                if (timer.ElapsedMilliseconds >= 15000)
                     throw new Exception("Failed to maintain the scoreboard visibility");
 
                 //Wait some time
@@ -196,7 +209,7 @@ namespace HypeCorner
         private async Task<List<TwitchLib.Api.V5.Models.Streams.Stream>> GetAvailableStreams()
         {
             //Get a list of blacklisted channels
-            var webBlacklist = await GetBlacklistChannels();
+            var webBlacklist = await Orchestra?.GetBlacklistAsync();
 
             //Get the streams
             Logger.Info("Updating list of available channels", LOG_APP);
@@ -226,17 +239,10 @@ namespace HypeCorner
             return validStreams;
         }
 
-        /// <summary>
-        /// Gets a list of blacklisted channels and their reasons.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<Dictionary<string, string>> GetBlacklistChannels()
+        public void Dispose()
         {
-            if (string.IsNullOrEmpty(Configuration.ApiEndpoint)) return null;
-
-            Logger.Trace("Checking blacklist", LOG_APP);
-            var json = await http.GetStringAsync(string.Format("{0}/api/blacklist", Configuration.ApiEndpoint));
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            Orchestra?.Dispose();
+            _capture?.Dispose();
         }
     }
 }

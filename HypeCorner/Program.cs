@@ -1,6 +1,6 @@
 ﻿using HypeCorner.Hosting;
 using HypeCorner.Logging;
-using HypezoneTwitch.Logging;
+using HypeCorner.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -38,10 +38,7 @@ namespace HypeCorner
 
             //Create and run the HypeZone
             Console.WriteLine("Starting HypeCorner");
-            var hypezone = new HypeWatcher(config)
-            {
-                Logger = new ConsoleLogger(config.LogLevel, true)
-            };
+            var hypezone = new HypeWatcher(config, new ConsoleLogger(config.LogLevel, true))
 
             try
             {

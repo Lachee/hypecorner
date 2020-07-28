@@ -6,7 +6,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.XFeatures2D;
 using HypeCorner.Utility;
-using HypezoneTwitch.Logging;
+using HypeCorner.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
