@@ -63,7 +63,7 @@ namespace HypeCorner
 
             //Setup Orchestra
             Orchestra = new Orchestra(configuration.ApiName, configuration.ApiPassword, configuration.ApiBaseUrl) { Logger = Logger };
-            Orchestra.OnSkip += (s, e) => _skip = true;
+            Orchestra.OnSkip += (s, e) => { Logger.Info("skipping channel", LOG_APP); _skip = true; };
 
             //Setup the TWitch API
             _twitch = new TwitchAPI();

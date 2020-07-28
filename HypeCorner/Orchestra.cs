@@ -51,9 +51,14 @@ namespace HypeCorner
         /// <param name="baseUrl"></param>
         public Orchestra(string username, string password, string baseUrl = "http://localhost:3000/api/")
         {
+            //Create the base URI. We use this in the HTTP construction and the websocket construction.
+            Uri uri = new Uri(baseUrl);
+
             #region HTTP initialization
+
+            //Create the HTTP Client
             http = new HttpClient();
-            http.BaseAddress = new Uri(baseUrl);
+            http.BaseAddress = uri;
             http.DefaultRequestHeaders.Authorization =
               new AuthenticationHeaderValue(
                 "Basic", Convert.ToBase64String(
@@ -63,7 +68,13 @@ namespace HypeCorner
             #endregion
 
             #region Websocket Initialization
-            websocket = new WebSocketSharp.WebSocket(baseUrl + "gateway");
+
+            //If the scheme is HTTP then its secure
+            bool secure = uri.Scheme == "https";
+            string websocketUrl = string.Format("ws{0}://{1}:{2}{3}{4}", secure ? "s" : "", uri.Host, uri.Port, uri.LocalPath, "gateway");
+
+            //Create the websocket client
+            websocket = new WebSocketSharp.WebSocket(websocketUrl);
             websocket.OnClose += (sender, e) =>
             {
                 if (_disposed) return;
@@ -94,13 +105,16 @@ namespace HypeCorner
                         break;
                 }
             };
+
+            //Finally open it
+            OpenWebsocket();
             #endregion
         }
 
         /// <summary>Opens the websocket</summary>
         private void OpenWebsocket() {
             Logger.Info("Opening Orchestra WS", LOG_ORC);
-            websocket.ConnectAsync();
+            websocket.Connect();
         }
 
         /// <summary>
@@ -152,7 +166,7 @@ namespace HypeCorner
         /// <returns></returns>
         public async Task ChangeChannelAsync(string channel) {
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
-            var contents = new StringContent(json);
+            var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             await http.PostAsync("orchestra/change", contents);
         }
 
@@ -162,7 +176,7 @@ namespace HypeCorner
         /// <returns></returns>
         public async Task PrerollAsync(string channel) {
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
-            var contents = new StringContent(json);
+            var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             await http.PostAsync("orchestra/preroll", contents);
         }
        
@@ -171,8 +185,9 @@ namespace HypeCorner
         /// </summary>
         /// <returns></returns>
         [System.Obsolete("There is literally no use to do this, because you will get the callback")]
-        public async Task SkipAsync() {
-            var contents = new StringContent("");
+        public async Task SkipAsync()
+        {
+            var contents = new StringContent("", System.Text.Encoding.UTF8, "application/json");
             await http.PostAsync("orchestra/skip", contents);
         }
 
@@ -196,7 +211,7 @@ namespace HypeCorner
         public async Task UpdateScoresAsync(int[] score)
         {
             var json = JsonConvert.SerializeObject(score);
-            var contents = new StringContent(json);
+            var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             await http.PostAsync("orchestra/score", contents);
         }
 

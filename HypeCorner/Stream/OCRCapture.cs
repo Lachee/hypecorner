@@ -241,7 +241,7 @@ namespace HypeCorner.Stream
 
             //Start the video capture
             Logger.Info("Capture has started", LOG_OCR);
-            Environment.SetEnvironmentVariable("OPENCV_FFMPEG_CAPTURE_OPTIONS", "protocol_whitelist;file,rtp,udp");
+            ValidateEnviromentVariables();
             using (VideoCapture capture = new VideoCapture(SdpLocation, VideoCapture.API.Ffmpeg))
             {
                 //var frame = new Mat();
@@ -690,6 +690,16 @@ namespace HypeCorner.Stream
             }
         }
         #endregion
+ 
+        /// <summary>
+        /// Sets up the initial enviromental variables required for OpenCV to work.
+        /// </summary>
+        public static bool ValidateEnviromentVariables()
+        {
+            bool valid = Environment.GetEnvironmentVariable("OPENCV_FFMPEG_CAPTURE_OPTIONS", EnvironmentVariableTarget.Process).Contains("rtp");
+            Debug.Assert(valid, "Enviroment Variable setup correctly");
+            return valid;
+        }
     }
 }
 

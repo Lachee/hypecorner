@@ -18,9 +18,16 @@ namespace HypeCorner
         static void Main(string[] args)
         {
             const string configPath = "config.json";
+
+            //We first need to setup the enviroment then terminate any instances of FFMPEG that might be left over from a crash.
+            if (!HypeCorner.Stream.OCRCapture.ValidateEnviromentVariables()) {
+                Console.WriteLine("Enviroment Variables are not setup! Set '{0}' to '{1}'", "OPENCV_FFMPEG_CAPTURE_OPTIONS", "protocol_whitelist;file,rtp,udp");
+                return;
+            }
+
             TerminateFFEMPG();
 
-            //Load COnfiguration
+            //Load Configuration
             Configuration config;
             if (!File.Exists(configPath))
             {
@@ -38,7 +45,7 @@ namespace HypeCorner
 
             //Create and run the HypeZone
             Console.WriteLine("Starting HypeCorner");
-            var hypezone = new HypeWatcher(config, new ConsoleLogger(config.LogLevel, true))
+            var hypezone = new HypeWatcher(config, new ConsoleLogger(config.LogLevel, true));
 
             try
             {

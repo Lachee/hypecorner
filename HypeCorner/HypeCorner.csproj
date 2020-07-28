@@ -16,12 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="obs-websocket-dotnet">
-      <HintPath>References\obs-websocket-dotnet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="References\obs-websocket-dotnet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

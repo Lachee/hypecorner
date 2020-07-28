@@ -1,15 +1,6 @@
-﻿using HypeCorner.Stream;
-using OBSWebsocketDotNet;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using TwitchLib.Api;
-using TwitchLib.Client;
-using TwitchLib.Client.Models;
 
 namespace HypeCorner.Hosting
 {
@@ -48,7 +39,7 @@ namespace HypeCorner.Hosting
         {
             //If they have no reason, they are not blacklisted
             var reason = await Orchestra.GetBlacklistReasonAsync(channelName);
-            return !string.IsNullOrWhiteSpace(reason);
+            return string.IsNullOrWhiteSpace(reason);
         }
     }
 }
