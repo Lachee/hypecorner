@@ -210,7 +210,7 @@ namespace HypeCorner
                 }
 
                 //If execeded, lets find someone else
-                if (timer.ElapsedMilliseconds >= 15000)
+                if (timer.ElapsedMilliseconds >= 20000)
                     throw new Exception("Failed to maintain the scoreboard visibility");
 
                 //Wait some time
@@ -230,10 +230,15 @@ namespace HypeCorner
             Logger.Info("Updating list of available channels", LOG_APP);
             TwitchLib.Api.V5.Models.Streams.LiveStreams gameStreams;
             List<TwitchLib.Api.V5.Models.Streams.Stream> validStreams;
+
+            const int MAX_PAGE = 20;
+            int pageOffset = 0;
+
             do
             {
                 //Get a random offset
-                int offset = random.Next(20);
+                int page = Math.Max(MAX_PAGE - pageOffset, 0);
+                int offset = page > 0 ? random.Next(page) : 0;
                 gameStreams = await _twitch.V5.Streams.GetLiveStreamsAsync(game: GAME_NAME, offset: offset, limit: 100);
 
                 //Query through acceptable streams
@@ -248,7 +253,16 @@ namespace HypeCorner
 
                 //Turn it into a list
                 validStreams = query.ToList();
+                pageOffset++;
                 Logger.Info("Found {0} new valid streams", LOG_APP, validStreams.Count);
+
+                //If we are above the max, then just wait for a long time before trying again
+                if (pageOffset >= MAX_PAGE) {
+                    Logger.Error("Failed to find enough in {0} pages. Waiting a minute...", LOG_APP);
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    pageOffset = 0;
+                }
+
             } while (validStreams.Count < MINIMUM_LIST_OPTIONS);
 
             return validStreams;

@@ -696,7 +696,10 @@ namespace HypeCorner.Stream
         /// </summary>
         public static bool ValidateEnviromentVariables()
         {
-            bool valid = Environment.GetEnvironmentVariable("OPENCV_FFMPEG_CAPTURE_OPTIONS", EnvironmentVariableTarget.Process).Contains("rtp");
+            var variables = Environment.GetEnvironmentVariable("OPENCV_FFMPEG_CAPTURE_OPTIONS", EnvironmentVariableTarget.Process);
+            if (variables == null) return false;
+
+            bool valid = variables.Contains("rtp");
             Debug.Assert(valid, "Enviroment Variable setup correctly");
             return valid;
         }
