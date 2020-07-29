@@ -194,17 +194,18 @@ namespace HypeCorner
                 {
                     //Reset the timer as we are on the scoreboard.
                     timer.Restart();
-
-                    //If the score changed, then we will tell the orchestra.
-                    var scores = _capture.GetScores();
-                    if (scores[0] != previousLeft || scores[1] != previousRight)
-                    {
-                        previousLeft = scores[0]; previousRight = scores[1];
-                        await Orchestra.UpdateScoresAsync(scores);
-                    }
                 }
-                
-                if (Console.KeyAvailable) {
+
+                //If the score changed, then we will tell the orchestra.
+                var scores = _capture.GetScores();
+                if (scores[0] != previousLeft || scores[1] != previousRight)
+                {
+                    previousLeft = scores[0]; previousRight = scores[1];
+                    await Orchestra.UpdateScoresAsync(scores);
+                }
+
+                //Skip from key or _skip
+                if (Console.KeyAvailable || _skip) {
                     while (Console.KeyAvailable) Console.ReadKey(true);
                     throw new Exception("Requested Cancellation");
                 }
