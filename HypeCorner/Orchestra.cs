@@ -22,7 +22,7 @@ namespace HypeCorner
         const string EVENT_ORCHESTRA_SCORE     = "ORCHESTRA_SCORE";    //Sent every now and again to tell the users what we think the score is. More a reminder to stay connected.
         const string EVENT_BLACKLIST_ADD       = "BLACKLIST_ADDED";    //Invoked when a user is added to the blacklist
         const string EVENT_BLACKLIST_REMOVE    = "BLACKLIST_REMOVED";  //Invoked when a user is removed from the blacklist
-
+        const string EVENT_HEARTBEAT           = "HEARTBEAT";
 
         //Set once the orchestra has been disposed.
         private bool _disposed = false;
@@ -106,6 +106,12 @@ namespace HypeCorner
                 {
                     //We dont care about all the events
                     default: break;
+
+                    //On heartbeat, just send it back.
+                    case EVENT_HEARTBEAT:
+                        Logger.Trace("Heartbeat 💓");
+                        websocket.Send(e.Data);
+                        break;
 
                     //Skip events are important to us.
                     case EVENT_ORCHESTRA_SKIP:
