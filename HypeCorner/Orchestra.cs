@@ -68,12 +68,13 @@ namespace HypeCorner
             //Create the HTTP Client
             http = new HttpClient();
             http.BaseAddress = uri;
-            http.DefaultRequestHeaders.Authorization =
-              new AuthenticationHeaderValue(
-                "Basic", Convert.ToBase64String(
+
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(password);
+            /*
+              new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
                     System.Text.ASCIIEncoding.ASCII.GetBytes(
                        $"{username}:{password}")));
-
+            */
             #endregion
 
             #region Websocket Initialization
@@ -184,7 +185,8 @@ namespace HypeCorner
         public async Task ChangeChannelAsync(string channel) {
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
             var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            await http.PostAsync("orchestra/change", contents);
+            var response = await http.PostAsync("orchestra/change", contents);
+            if (!response.IsSuccessStatusCode) throw new Exception("Failed to change channel");
         }
 
         /// <summary>
@@ -194,7 +196,8 @@ namespace HypeCorner
         public async Task PrerollAsync(string channel) {
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
             var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            await http.PostAsync("orchestra/preroll", contents);
+            var response = await http.PostAsync("orchestra/preroll", contents);
+            Logger.Trace(response.StatusCode.ToString());
         }
        
         /// <summary>
