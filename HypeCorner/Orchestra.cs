@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -42,6 +43,14 @@ namespace HypeCorner
         {
             public string name;
         }
+
+        private struct BlacklistPayload
+        {
+            public string _id;
+            public string name;
+            public string reason;
+            public ulong time;
+        };
 
         /// <summary>
         /// Creates a new Orchestra instance
@@ -124,7 +133,8 @@ namespace HypeCorner
         public async Task<IReadOnlyDictionary<string, string>> GetBlacklistAsync()
         {
             var json = await http.GetStringAsync("blacklist");
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            var blacklist = JsonConvert.DeserializeObject<List<BlacklistPayload>>(json);
+            return blacklist.ToDictionary(b => b.name, b => b.reason);
         }
 
         /// <summary>
@@ -137,7 +147,8 @@ namespace HypeCorner
             try
             {
                 //return the reason
-                return await http.GetStringAsync($"blacklist/{channel}");
+                var json = await http.GetStringAsync($"blacklist/{channel}");
+                return JsonConvert.DeserializeObject<BlacklistPayload>(json).reason;
             } catch(HttpRequestException _)
             {
                 //Threw an error code, probably has no blacklist
@@ -215,7 +226,6 @@ namespace HypeCorner
             await http.PostAsync("orchestra/score", contents);
         }
 
-
         public void Dispose()
         {
             _disposed = true;
@@ -226,5 +236,6 @@ namespace HypeCorner
             http?.Dispose();
             http = null;
         }
+
     }
 }

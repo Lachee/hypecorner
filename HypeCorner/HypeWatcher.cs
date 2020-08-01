@@ -114,6 +114,8 @@ namespace HypeCorner
                     Logger.Trace("Creating a channel capture", LOG_APP);
                     using (_capture = new OCRCapture(stream.Channel.Name) { Logger = Logger })
                     {
+                        //_capture.ShowWindows();
+
                         //Begin capturing
                         _capture.Begin();
                         await Task.Delay(10);
