@@ -179,8 +179,11 @@ namespace HypeCorner
             Logger.Info("Attempting to host channel", LOG_APP);
             if (!await _host.CanHostAsync(_capture.ChannelName))
                 throw new Exception("Cannot host the channel");
+            
+            //Tell orchestra that we want to update the thumbnail and then host them
+            await Orchestra.UploadThumbnail(_capture.ChannelName, _capture.GetJpegData());
             await _host.HostAsync(_capture.ChannelName);
-
+            
             //Main loop that we will continue while we are hosting this channel
             //Reset the timer. We are offically reading the contents of the stream now.
             Logger.Info("Watching stream for end of game", LOG_APP);

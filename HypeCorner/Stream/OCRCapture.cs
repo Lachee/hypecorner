@@ -16,6 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace HypeCorner.Stream
 {
@@ -91,6 +92,7 @@ namespace HypeCorner.Stream
         private volatile bool _processing;
 
         private object _lock;
+        private object _frameLock;
         private Thread _thread;
         #endregion
 
@@ -111,6 +113,7 @@ namespace HypeCorner.Stream
             this._leftScores = new CyclicList<int>(cyclicSize);
             this._rightScores = new CyclicList<int>(cyclicSize);
             this._lock = new object();
+            this._frameLock = new object();
 
             //Prepare detector
             _kaze = new KAZE();
@@ -249,23 +252,27 @@ namespace HypeCorner.Stream
                 {
                     try
                     {
-                        //Abort
-                        if (!capture.IsOpened)
-                            break;
-
-                        if (!capture.Grab())
+                        // Dont allow frame grabs while we are processing or reading the frame.
+                        lock (_frameLock)
                         {
-                            Thread.Sleep(10);
-                            continue;
+                            //Abort
+                            if (!capture.IsOpened)
+                                break;
+
+                            if (!capture.Grab())
+                            {
+                                Thread.Sleep(10);
+                                continue;
+                            }
+
+                            //Read the frame and then process it
+                            // We may need to exit early.
+                            capture.Retrieve(_frame);
+                            if (!_processing) break;
+
+                            _frameCount++;
+                            ProcessFrame();
                         }
-
-                        //Read the frame and then process it
-                        // We may need to exit early.
-                        capture.Retrieve(_frame);
-                        if (!_processing) break;
-
-                        _frameCount++;
-                        ProcessFrame();
 
                         //Just wait some arbitary time
                         if (useWindows)
@@ -275,7 +282,7 @@ namespace HypeCorner.Stream
                         } 
                         else
                         {
-                            CvInvoke.WaitKey(1);
+                            CvInvoke.WaitKey(10);
                         }
                     }
                     catch (Exception e)
@@ -691,6 +698,20 @@ namespace HypeCorner.Stream
         }
         #endregion
  
+        /// <summary>
+        /// Gets the current frame and translate it into jpeg
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetJpegData()
+        {
+            //We have to make sure the frame is locked.
+            lock (_frameLock)
+            {
+                var img = _frame.ToImage<Bgr, byte>();
+                return img.ToJpegData();
+            }
+        }
+
         /// <summary>
         /// Sets up the initial enviromental variables required for OpenCV to work.
         /// </summary>

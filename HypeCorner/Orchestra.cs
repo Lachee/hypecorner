@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using HypeCorner.Logging;
 using Newtonsoft.Json;
@@ -169,7 +170,7 @@ namespace HypeCorner
         /// <param name="channel">Name of the channel to switch too</param>
         /// <param name="prerollDuration">How long to wait for the preroll. Clients should be able to handle any amount and is only there for safety.</param>
         /// <returns></returns>
-        public async Task ChangeChannelPrerollAsync(string channel, int prerollDuration = 100)
+        public async Task ChangeChannelPrerollAsync(string channel, int prerollDuration = 1000)
         {
             //Call the preroll, wait a bit, then change the channel
             await PrerollAsync(channel);
@@ -186,7 +187,8 @@ namespace HypeCorner
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
             var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             var response = await http.PostAsync("orchestra/change", contents);
-            if (!response.IsSuccessStatusCode) throw new Exception("Failed to change channel");
+            if (!response.IsSuccessStatusCode) 
+                throw new Exception("Failed to change channel");
         }
 
         /// <summary>
@@ -220,6 +222,26 @@ namespace HypeCorner
         public Task UpdateScoresAsync(int left, int right)
         {
             return UpdateScoresAsync(new int[] { left, right });
+        }
+
+        /// <summary>
+        /// Uploads a thumbnail
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="thumbnail"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public async Task UploadThumbnail(string channel, byte[] thumbnail, string format = "jpeg")
+        {
+            using var contents = new ByteArrayContent(thumbnail);
+            contents.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+
+            using var form = new MultipartFormDataContent();
+            form.Add(contents, "image", "thumbnail.jpg");
+
+            var response = await http.PostAsync("channel/" + channel + "/thumbnail", form);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to change channel");
         }
 
         /// <summary>
