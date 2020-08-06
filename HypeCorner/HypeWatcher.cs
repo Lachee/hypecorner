@@ -243,7 +243,7 @@ namespace HypeCorner
         private async Task<bool> CanHostAsync(string channel)
         {
             //Make sure they dont have a blacklist
-            var reason = await Orchestra.GetBlacklistReasonAsync(_capture.ChannelName);
+            var reason = await Orchestra.GetBlacklistReasonAsync(channel);
             if (!string.IsNullOrWhiteSpace(reason))
             {
                 Logger.Warning("Cannot host channel {0}: {1}", LOG_APP, channel, reason);
