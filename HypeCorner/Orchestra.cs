@@ -170,12 +170,12 @@ namespace HypeCorner
         /// <param name="channel">Name of the channel to switch too</param>
         /// <param name="prerollDuration">How long to wait for the preroll. Clients should be able to handle any amount and is only there for safety.</param>
         /// <returns></returns>
-        public async Task ChangeChannelPrerollAsync(string channel, int prerollDuration = 1000)
+        public async Task HostChannelAsync(string channel, int prerollDuration)
         {
             //Call the preroll, wait a bit, then change the channel
             await PrerollAsync(channel);
             await Task.Delay(prerollDuration);
-            await ChangeChannelAsync(channel);
+            await HostChannelAsync(channel);
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace HypeCorner
         /// </summary>
         /// <param name="channel"></param>
         /// <returns></returns>
-        public async Task ChangeChannelAsync(string channel) {
+        public async Task HostChannelAsync(string channel) {
             var json = JsonConvert.SerializeObject(new ChannelNamePayload() { name = channel });
             var contents = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             var response = await http.PostAsync("orchestra/change", contents);

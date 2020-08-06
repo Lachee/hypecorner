@@ -1,15 +1,8 @@
-﻿using HypeCorner.Hosting;
-using HypeCorner.Logging;
-using HypeCorner.Logging;
+﻿using HypeCorner.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using TwitchLib.Api;
-using TwitchLib.Client;
-using TwitchLib.Client.Models;
 
 namespace HypeCorner
 {
@@ -45,12 +38,16 @@ namespace HypeCorner
 
             //Create and run the HypeZone
             Console.WriteLine("Starting HypeCorner");
-            var hypezone = new HypeWatcher(config, new ConsoleLogger(config.LogLevel, true));
+            ILogger logger = config.LogFile ?
+                                (ILogger) new FileLogger("hypecorner.log", config.LogLevel) : 
+                                (ILogger) new ConsoleLogger(config.LogLevel, true);
+
+            var hypezone = new HypeWatcher(config, logger);
 
             try
             {
                 //Wait and terminate after
-                hypezone.WatchAsync().Wait();
+                hypezone.RunAsync().Wait();
                 Console.WriteLine("HypeZone terminated");
             }
             finally
