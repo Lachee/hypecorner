@@ -275,7 +275,7 @@ namespace HypeCorner
 
             //Instead, we will always just get hte first and shift it back down.
             var stream = _streamQueue.Dequeue();
-            Logger.Info("Dequeued {0} with {1} views", stream.Channel.Name, stream.Viewers);
+            Logger.Info("Dequeued {0} with {1} views", LOG_APP, stream.Channel.Name, stream.Viewers);
 
             //Add them to the checklist.
             //Remove them from our check list so we dont search them again
